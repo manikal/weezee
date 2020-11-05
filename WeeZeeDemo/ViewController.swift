@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import weezee;
 
-class ViewController: UIViewController {
+class ViewController: WZCameraViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
