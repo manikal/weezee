@@ -13,6 +13,7 @@
 
 @property (strong, nonatomic) VNRecognizeTextRequest *request;
 @property (copy, nonatomic) VNRequestCompletionHandler recognizeTextHandler;
+@property (strong, nonatomic) NSMutableCharacterSet *notDigitsNorDotsCharSet;
 
 @end
 
@@ -26,6 +27,10 @@
         
         self.request.recognitionLevel = VNRequestTextRecognitionLevelAccurate;
         self.request.usesLanguageCorrection = NO;
+        
+        self.notDigitsNorDotsCharSet = [NSMutableCharacterSet decimalDigitCharacterSet];
+        [self.notDigitsNorDotsCharSet invert];
+        [self.notDigitsNorDotsCharSet addCharactersInString:@"."];
     }
     return self;
 }
@@ -51,9 +56,10 @@
         if (!error) {
             for (VNRecognizedTextObservation *result in request.results) {
                 VNRecognizedText *recognizedText = [result topCandidates:1].firstObject;
-                
-                NSLog(@"%@", recognizedText.string);
-                
+                                
+                if ([recognizedText.string rangeOfCharacterFromSet:self.notDigitsNorDotsCharSet].location == NSNotFound) {
+                    NSLog(@"%@", recognizedText.string);
+                }
             }
         } else {
             NSLog(@"%@", [error description]);
