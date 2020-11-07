@@ -10,7 +10,7 @@
 #import "WZCapture.h"
 #import "WZVisionRecognition.h"
 
-@interface WZCameraViewController ()
+@interface WZCameraViewController () <WZRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet WZPreviewView *previewView;
 @property (strong, nonatomic) WZCapture *capture;
@@ -108,6 +108,13 @@
     self.maskLayer.path = path.CGPath;
 }
 
+#pragma mark WZRecognizerDelegate
+
+- (void)recognizer:(id<WZRecognizer>)recognizer recognizedString:(NSString *)recognizedString {
+    if (self.delegate) {
+        [self.delegate cameraViewController:self recognizedString:recognizedString];
+    }
+}
 
 
 @end

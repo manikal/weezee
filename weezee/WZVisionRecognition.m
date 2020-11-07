@@ -9,7 +9,8 @@
 
 #import "WZVisionRecognition.h"
 
-@interface WZVisionRecognition ()
+
+@interface WZVisionRecognition () <WZRecognizer>
 
 @property (strong, nonatomic) VNRecognizeTextRequest *request;
 @property (copy, nonatomic) VNRequestCompletionHandler recognizeTextHandler;
@@ -18,6 +19,8 @@
 @end
 
 @implementation WZVisionRecognition
+
+@synthesize recognitionDelegate;
 
 - (instancetype)init
 {
@@ -58,7 +61,9 @@
                 VNRecognizedText *recognizedText = [result topCandidates:1].firstObject;
                                 
                 if ([recognizedText.string rangeOfCharacterFromSet:self.notDigitsNorDotsCharSet].location == NSNotFound) {
-                    NSLog(@"%@", recognizedText.string);
+                    if (self.recognitionDelegate) {
+                        [self.recognitionDelegate recognizer:self recognizedString:recognizedText.string];
+                    }                    
                 }
             }
         } else {
@@ -72,5 +77,4 @@
 - (void)setRegionOfInterest:(CGRect)regionOfInterest {
     self.request.regionOfInterest = regionOfInterest;
 }
-
 @end

@@ -9,7 +9,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class WZCameraViewController;
+
+@protocol WZCameraViewControllerDelegate <NSObject>
+
+@optional
+- (void)cameraViewController:(WZCameraViewController *)cameraViewController recognizedString:(NSString *)recognizedString;
+
+@end
+
 @interface WZCameraViewController : UIViewController
+
+@property(nullable,nonatomic,weak) id <WZCameraViewControllerDelegate> delegate;
 
 @end
 
