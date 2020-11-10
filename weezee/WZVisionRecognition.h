@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface WZVisionRecognition : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate,WZRecognizerDelegate>
+@interface WZVisionRecognition : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate,WZRecognizerDelegate,WZRecognizer>
 
 @property (assign, nonatomic) CGRect regionOfInterest;
 

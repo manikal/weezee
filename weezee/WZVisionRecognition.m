@@ -10,7 +10,7 @@
 #import "WZVisionRecognition.h"
 
 
-@interface WZVisionRecognition () <WZRecognizer>
+@interface WZVisionRecognition ()
 
 @property (strong, nonatomic) VNRecognizeTextRequest *request;
 @property (copy, nonatomic) VNRequestCompletionHandler recognizeTextHandler;

@@ -19,6 +19,8 @@
 @property (strong, nonatomic) CAShapeLayer *maskLayer;
 @property (assign, nonatomic) CGAffineTransform bottomToTopTransform;
 @property (assign, nonatomic) CGRect regionOfInterest;
+@property (weak, nonatomic) IBOutlet UILabel *numberLabel;
+@property (weak, nonatomic) IBOutlet UIView *overlayContainerView;
 
 @end
 
@@ -26,16 +28,32 @@
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
     self = [super initWithCoder:coder];
+        
+    NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:@"com.mijokaliger.weezee"];
+    NSURL *resourceURL = [frameworkBundle URLForResource:@"WeeZeeResources" withExtension:@"bundle"];
+    NSBundle *bundleResources = [NSBundle bundleWithURL:resourceURL];
+    self = [super initWithNibName:@"WZCameraViewController" bundle:bundleResources];
+
+    [self commonInit];
+
+    return self;
+}
+
+- (instancetype)init {
+    self = [super init];
     
     NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:@"com.mijokaliger.weezee"];
     NSURL *resourceURL = [frameworkBundle URLForResource:@"WeeZeeResources" withExtension:@"bundle"];
     NSBundle *bundleResources = [NSBundle bundleWithURL:resourceURL];
-    
     self = [super initWithNibName:@"WZCameraViewController" bundle:bundleResources];
+    [self commonInit];
     
-    self.visionRecognition = [WZVisionRecognition new];
-    
+    return self;
+}
 
+- (void)commonInit {
+    self.visionRecognition = [WZVisionRecognition new];
+    self.visionRecognition.recognitionDelegate = self;
     
     self.bottomToTopTransform = CGAffineTransformTranslate(CGAffineTransformMakeScale(1, -1), 0, -1);
     
@@ -57,8 +75,6 @@
             NSLog(@"Error setting up capture: %@", [error description]);
         }
     }];
-    
-    return self;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
@@ -77,6 +93,12 @@
     self.maskLayer.backgroundColor = [UIColor clearColor].CGColor;
     self.maskLayer.fillRule = kCAFillRuleEvenOdd;
     self.cutoutView.layer.mask = self.maskLayer;
+    
+    self.numberLabel.text = @"";
+    
+    if(self.cameraOverlayView) {
+        [self.overlayContainerView addSubview:self.cameraOverlayView];
+    }
 }
 
 - (CGRect)calculateRegionOfInterest {
@@ -106,14 +128,27 @@
     UIBezierPath *path = [UIBezierPath bezierPathWithRect:self.cutoutView.frame];
     [path appendPath:[UIBezierPath bezierPathWithRect:cutoutRect]];
     self.maskLayer.path = path.CGPath;
+    
+    // Move the number view down to under cutout.
+    CGRect numFrame = cutoutRect;
+    numFrame.origin.y += numFrame.size.height;
+    self.numberLabel.frame = numFrame;
+}
+
+- (IBAction)closeButtonTouched:(UIButton *)sender {
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark WZRecognizerDelegate
 
 - (void)recognizer:(id<WZRecognizer>)recognizer recognizedString:(NSString *)recognizedString {
-    if (self.delegate) {
-        [self.delegate cameraViewController:self recognizedString:recognizedString];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^(void) {
+        self.numberLabel.text = recognizedString;
+        
+        if (self.delegate) {
+            [self.delegate cameraViewController:self recognizedString:recognizedString];
+        }
+    });
 }
 
 

@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface WZCameraViewController : UIViewController
 
 @property(nullable,nonatomic,weak) id <WZCameraViewControllerDelegate> delegate;
+@property(nullable, nonatomic,strong) UIView *cameraOverlayView;
 
 @end
 
