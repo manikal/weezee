@@ -21,6 +21,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var cameraOverlayView: UIView!
     
     private var numbers = [String]()
+    private var foundNumbers = [String]()
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -67,12 +68,11 @@ extension ViewController: WZCameraViewControllerDelegate {
     func cameraViewController(_ cameraViewController: WZCameraViewController, recognizedString: String) {
         print("\(recognizedString)")
         
-        if numbers.contains(recognizedString) {
+        if numbers.contains(recognizedString) && !foundNumbers.contains(recognizedString) {
+            foundNumbers.append(recognizedString)
             self.numbersFoundLabel.text?.append(recognizedString + ", ")
             AudioServicesPlaySystemSound(1054);
-        } else {
-            AudioServicesPlaySystemSound(1053);
-        }
+        } 
     }
 }
 
